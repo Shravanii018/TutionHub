@@ -4,7 +4,7 @@ A full-stack tuition management platform that helps private teachers manage stud
 
 > Built with Node.js, Express, MongoDB, and EJS. Actively used by a real tuition teacher and her students.
 
-🔗 **[Live Demo](#)** &nbsp;|&nbsp; 👩‍💻 **[Portfolio](#)** &nbsp;|&nbsp; 💼 **[LinkedIn](https://www.linkedin.com/in/shravani-jagtap-175751318/)**
+🔗 **[Live Demo](https://tutionhub-4r2v.onrender.com)** &nbsp;|&nbsp; 👩‍💻 **[Portfolio](#)** &nbsp;|&nbsp; 💼 **[LinkedIn](https://www.linkedin.com/in/shravani-jagtap-175751318/)**
 
 ---
 
