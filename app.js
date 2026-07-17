@@ -1,7 +1,7 @@
 if (process.env.NODE_ENV != "production") {
     require("dotenv").config();
 }
-console.log("API KEY IS:", process.env.GEMINI_API_KEY);  // temporary debug line
+console.log("API KEY IS:", process.env.GROQ_API_KEY);  // temporary debug line
 
 const express = require("express");
 const app = express();
@@ -38,19 +38,6 @@ async function main() {
     await mongoose.connect(MONGO_URL);
 }
 
-app.get("/setup-teacher", async (req, res) => {
-    const User = require("./models/user.js");
-    const teacher = new User({
-        username: "deepali_maam",
-        fullName: "Mrs. Deepali",
-        email: "deepali.jagtap2012@gmail.com",
-        phone: "9970300610",
-        role: "teacher",
-    });
-    await User.register(teacher, "Avani@10");
-    res.send("Teacher account created successfully!");
-});
-
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
@@ -86,6 +73,20 @@ app.use((req, res, next) => {
     res.locals.currUser = req.user;
     next();
 });
+
+app.get("/setup-teacher", async (req, res) => {
+    const User = require("./models/user.js");
+    const teacher = new User({
+        username: "deepali_maam",
+        fullName: "Mrs. Deepali",
+        email: "deepali.jagtap2012@gmail.com",
+        phone: "9970300610",
+        role: "teacher",
+    });
+    await User.register(teacher, "Avani@10");
+    res.send("Teacher account created successfully!");
+});
+
 
 app.get("/", (req, res) => {
     res.redirect("/login");
