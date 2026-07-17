@@ -1,0 +1,122 @@
+/* ===== Flashcard Flip Animation ===== */
+/* This is the dedicated CSS for the flashcard flip interaction,
+   similar to how rating.css handled star ratings in Airbnb */
+
+.flashcard-scene {
+    width: 100%;
+    height: 200px;
+    perspective: 800px;
+    margin-bottom: 1.5rem;
+    cursor: pointer;
+}
+
+.flashcard-inner {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s ease;
+}
+
+.flashcard-scene.flipped .flashcard-inner {
+    transform: rotateY(180deg);
+}
+
+.flashcard-front,
+.flashcard-back {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    box-shadow: 0 4px 16px rgba(79, 70, 229, 0.12);
+}
+
+.flashcard-front {
+    background-color: #4f46e5;
+    color: white;
+}
+
+.flashcard-back {
+    background-color: white;
+    color: #1e1b4b;
+    border: 2px solid #4f46e5;
+    transform: rotateY(180deg);
+}
+
+.flashcard-front .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    opacity: 0.7;
+    margin-bottom: 0.75rem;
+}
+
+.flashcard-back .label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: #4f46e5;
+    opacity: 0.8;
+    margin-bottom: 0.75rem;
+}
+
+.flashcard-front .card-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.flashcard-back .card-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #374151;
+}
+
+.flip-hint {
+    font-size: 0.75rem;
+    opacity: 0.6;
+    margin-top: 1rem;
+}
+
+/* ===== Flashcard counter navigation ===== */
+.flashcard-nav {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.flashcard-nav button {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.flashcard-nav button:hover {
+    background-color: #4338ca;
+}
+
+.flashcard-nav button:disabled {
+    background-color: #d1d5db;
+    cursor: not-allowed;
+}
+
+.flashcard-counter {
+    font-size: 0.9rem;
+    color: #6b7280;
+    font-weight: 500;
+}

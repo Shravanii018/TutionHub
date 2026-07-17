@@ -1,0 +1,49 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-sm-10 col-11">
+        <div class="text-center mb-4">
+            <h2 class="page-title">Create your account</h2>
+            <p class="text-muted">Join TuitionHub as a student today</p>
+        </div>
+
+        <div class="form-card">
+            <form action="/signup" method="POST" class="needs-validation" novalidate>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="fullName" class="form-label">Full Name</label>
+                        <input name="fullName" id="fullName" type="text" class="form-control" placeholder="Your full name" required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <input name="username" id="username" type="text" class="form-control" placeholder="Choose a username" required>
+                        <div class="valid-feedback">Looks good!</div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email <span class="text-muted fw-normal">(optional)</span></label>
+                    <input name="email" id="email" type="email" class="form-control" placeholder="your@email.com">
+                    <div class="invalid-feedback">Please enter a valid email</div>
+                </div>
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Phone <span class="text-muted fw-normal">(optional)</span></label>
+                    <input name="phone" id="phone" type="text" class="form-control" placeholder="Your phone number">
+                </div>
+                <!-- role is hardcoded as student — no dropdown needed -->
+                <input type="hidden" name="role" value="student">
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input name="password" id="password" type="password" class="form-control" placeholder="Create a strong password" required>
+                    <div class="invalid-feedback">Please enter a password</div>
+                </div>
+                <button class="btn btn-primary w-100">
+                    <i class="fa-solid fa-user-plus"></i> Create Account
+                </button>
+            </form>
+            <p class="text-center text-muted mt-3 mb-0" style="font-size:0.875rem;">
+                Already have an account? <a href="/login" style="color:#4f46e5;font-weight:600;">Sign In</a>
+            </p>
+        </div>
+    </div>
+</div>

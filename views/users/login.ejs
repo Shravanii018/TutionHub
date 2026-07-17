@@ -1,0 +1,34 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5 col-sm-10 col-11">
+        <div class="text-center mb-4">
+            <div class="brand-icon mx-auto mb-3" style="width:52px;height:52px;font-size:1.4rem;background:#4f46e5;border-radius:14px;display:flex;align-items:center;justify-content:center;color:white;">
+                <i class="fa-solid fa-graduation-cap"></i>
+            </div>
+            <h2 class="page-title">Welcome back!</h2>
+            <p class="text-muted">Sign in to your TuitionHub account</p>
+        </div>
+
+        <div class="form-card">
+            <form action="/login" method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="username" class="form-label">Username</label>
+                    <input name="username" id="username" type="text" class="form-control" placeholder="Enter your username" required>
+                    <div class="invalid-feedback">Please enter your username</div>
+                </div>
+                <div class="mb-4">
+                    <label for="password" class="form-label">Password</label>
+                    <input name="password" id="password" type="password" class="form-control" placeholder="Enter your password" required>
+                    <div class="invalid-feedback">Please enter your password</div>
+                </div>
+                <button class="btn btn-primary w-100">
+                    <i class="fa-solid fa-right-to-bracket"></i> Sign In
+                </button>
+            </form>
+            <p class="text-center text-muted mt-3 mb-0" style="font-size:0.875rem;">
+                Don't have an account? <a href="/signup" style="color:#4f46e5;font-weight:600;">Sign Up</a>
+            </p>
+        </div>
+    </div>
+</div>

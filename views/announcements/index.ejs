@@ -1,0 +1,48 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Announcements</h2>
+        <p class="page-subtitle">Stay updated with the latest notices</p>
+    </div>
+    <% if(currUser.role === "teacher") { %>
+    <a href="/announcements/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> New Announcement
+    </a>
+    <% } %>
+</div>
+
+<% if(allAnnouncements.length === 0) { %>
+<div class="empty-state">
+    <i class="fa-solid fa-bullhorn"></i>
+    <p>No announcements yet.</p>
+    <% if(currUser.role === "teacher") { %>
+    <a href="/announcements/new" class="btn btn-primary">Post First Announcement</a>
+    <% } %>
+</div>
+<% } else { %>
+    <% for(let announcement of allAnnouncements) { %>
+    <div class="announcement-card">
+        <div class="d-flex justify-content-between align-items-start flex-wrap gap-2">
+            <div>
+                <div class="announcement-title">
+                    <i class="fa-solid fa-circle-dot me-1" style="color:#4f46e5;font-size:0.6rem;vertical-align:middle;"></i>
+                    <%= announcement.title %>
+                </div>
+                <div class="announcement-date mt-1">
+                    <i class="fa-regular fa-calendar me-1"></i><%= announcement.createdAt.toDateString() %>
+                    &nbsp;&bull;&nbsp; Posted by <%= announcement.createdBy ? announcement.createdBy.fullName : "Teacher" %>
+                </div>
+            </div>
+            <% if(currUser.role === "teacher") { %>
+            <form method="POST" action="/announcements/<%= announcement._id %>?_method=DELETE">
+                <button class="btn btn-danger btn-sm">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </form>
+            <% } %>
+        </div>
+        <p class="mt-2 mb-0" style="color:#374151;"><%= announcement.message %></p>
+    </div>
+    <% } %>
+<% } %>

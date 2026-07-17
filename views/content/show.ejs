@@ -1,0 +1,58 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-11">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title"><%= note.title %></h2>
+                <p class="page-subtitle"><%= note.subject %></p>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div style="font-size:0.78rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Type</div>
+                        <span class="content-type-badge mt-1 d-inline-block <%= note.type === 'pdf' ? 'type-pdf' : note.type === 'assignment' ? 'type-assignment' : 'type-note' %>">
+                            <%= note.type %>
+                        </span>
+                    </div>
+                    <div class="col-sm-6">
+                        <div style="font-size:0.78rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Uploaded by</div>
+                        <div style="font-weight:500;"><%= note.uploadedBy.fullName %></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div style="font-size:0.78rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Date</div>
+                        <div style="font-weight:500;"><%= note.uploadedAt.toDateString() %></div>
+                    </div>
+                </div>
+
+                <% if(note.file && note.file.url) { %>
+                <div class="mt-4">
+                    <a href="<%= note.file.url %>" target="_blank" class="btn btn-primary">
+                        <i class="fa-solid fa-file-pdf"></i> Open File
+                    </a>
+                </div>
+                <% } %>
+            </div>
+        </div>
+
+        <% if(currUser.role === "teacher") { %>
+        <div class="d-flex gap-2 mb-4">
+            <form method="POST" action="/flashcards/generate/<%= note._id %>">
+                <button class="btn btn-primary">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i> Generate Flashcards
+                </button>
+            </form>
+            <form method="POST" action="/content/<%= note._id %>?_method=DELETE">
+                <button class="btn btn-danger">
+                    <i class="fa-solid fa-trash"></i> Delete
+                </button>
+            </form>
+        </div>
+        <% } %>
+
+        <a href="/content" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to Notes & PDFs</a>
+    </div>
+</div>

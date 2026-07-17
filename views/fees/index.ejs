@@ -1,0 +1,82 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Fee Records</h2>
+        <p class="page-subtitle">Track student fee payments</p>
+    </div>
+    <% if(currUser.role === "teacher") { %>
+    <a href="/fees/new" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Add Fee Record
+    </a>
+    <% } %>
+</div>
+
+<% if(feeRecords.length === 0) { %>
+<div class="empty-state">
+    <i class="fa-solid fa-indian-rupee-sign"></i>
+    <p>No fee records found.</p>
+    <% if(currUser.role === "teacher") { %>
+    <a href="/fees/new" class="btn btn-primary">Add First Record</a>
+    <% } %>
+</div>
+<% } else { %>
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Student</th>
+                <th>Month</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Paid On</th>
+                <% if(currUser.role === "teacher") { %><th>Actions</th><% } %>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i = 0; i < feeRecords.length; i++) { %>
+            <tr>
+                <td><%= i + 1 %></td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:32px;height:32px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#4f46e5;font-size:0.8rem;flex-shrink:0;">
+                            <%= feeRecords[i].student.fullName.charAt(0).toUpperCase() %>
+                        </div>
+                        <span style="font-weight:600;"><%= feeRecords[i].student.fullName %></span>
+                    </div>
+                </td>
+                <td><%= feeRecords[i].month %></td>
+                <td style="font-weight:600;">&#8377;<%= feeRecords[i].amount.toLocaleString("en-IN") %></td>
+                <td>
+                    <% if(feeRecords[i].paid) { %>
+                        <span class="badge-paid"><i class="fa-solid fa-check me-1"></i>Paid</span>
+                    <% } else { %>
+                        <span class="badge-unpaid"><i class="fa-solid fa-clock me-1"></i>Pending</span>
+                    <% } %>
+                </td>
+                <td><%= feeRecords[i].paidOn ? feeRecords[i].paidOn.toDateString() : "—" %></td>
+                <% if(currUser.role === "teacher") { %>
+                <td>
+                    <div class="d-flex gap-1">
+                        <% if(!feeRecords[i].paid) { %>
+                        <form method="POST" action="/fees/<%= feeRecords[i]._id %>/paid?_method=PUT" class="d-inline">
+                            <button class="btn btn-success btn-sm">
+                                <i class="fa-solid fa-check"></i> Mark Paid
+                            </button>
+                        </form>
+                        <% } %>
+                        <form method="POST" action="/fees/<%= feeRecords[i]._id %>?_method=DELETE" class="d-inline">
+                            <button class="btn btn-danger btn-sm">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </form>
+                    </div>
+                </td>
+                <% } %>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<% } %>

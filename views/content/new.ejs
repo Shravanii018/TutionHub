@@ -1,0 +1,49 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-11">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">Upload Content</h2>
+                <p class="page-subtitle">Share notes or PDFs with students</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form action="/content" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input name="note[title]" id="title" type="text" class="form-control" placeholder="e.g. Algebra Basics" required>
+                    <div class="invalid-feedback">Please enter a title</div>
+                </div>
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input name="note[subject]" id="subject" type="text" class="form-control" placeholder="e.g. Mathematics" required>
+                    <div class="invalid-feedback">Please enter the subject</div>
+                </div>
+                <div class="mb-3">
+                    <label for="type" class="form-label">Type</label>
+                    <select name="note[type]" id="type" class="form-select" required>
+                        <option value="">-- Select Type --</option>
+                        <option value="note">Note</option>
+                        <option value="pdf">PDF / Book</option>
+                        <option value="assignment">Assignment</option>
+                    </select>
+                    <div class="invalid-feedback">Please select a type</div>
+                </div>
+                <div class="mb-4">
+                    <label for="file" class="form-label">Upload File <span class="text-muted fw-normal">(optional)</span></label>
+                    <input name="note[file]" id="file" type="file" class="form-control" accept=".pdf,.doc,.docx">
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary">
+                        <i class="fa-solid fa-upload"></i> Upload
+                    </button>
+                    <a href="/content" class="btn btn-outline-primary">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <br>
+        <a href="/content" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to content</a>
+    </div>
+</div>

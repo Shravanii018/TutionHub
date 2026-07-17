@@ -1,0 +1,61 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Students</h2>
+        <p class="page-subtitle"><%= allStudents.length %> student(s) enrolled</p>
+    </div>
+    <a href="/students/new" class="btn btn-primary">
+        <i class="fa-solid fa-user-plus"></i> Add Student
+    </a>
+</div>
+
+<% if(allStudents.length === 0) { %>
+<div class="empty-state">
+    <i class="fa-solid fa-users"></i>
+    <p>No students added yet.</p>
+    <a href="/students/new" class="btn btn-primary">Add First Student</a>
+</div>
+<% } else { %>
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Name</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i = 0; i < allStudents.length; i++) { %>
+            <tr>
+                <td><%= i + 1 %></td>
+                <td>
+                    <div class="d-flex align-items-center gap-2">
+                        <div style="width:34px;height:34px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#4f46e5;font-size:0.85rem;flex-shrink:0;">
+                            <%= allStudents[i].fullName.charAt(0).toUpperCase() %>
+                        </div>
+                        <span style="font-weight:600;"><%= allStudents[i].fullName %></span>
+                    </div>
+                </td>
+                <td style="color:#6b7280;">@<%= allStudents[i].username %></td>
+                <td><%= allStudents[i].email %></td>
+                <td><%= allStudents[i].phone || "—" %></td>
+                <td>
+                    <div class="d-flex gap-1">
+                        <a href="/students/<%= allStudents[i]._id %>" class="btn btn-outline-primary btn-sm">View</a>
+                        <a href="/students/<%= allStudents[i]._id %>/edit" class="btn btn-primary btn-sm">Edit</a>
+                        <form method="POST" action="/students/<%= allStudents[i]._id %>?_method=DELETE" class="d-inline">
+                            <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<% } %>

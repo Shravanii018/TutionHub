@@ -1,0 +1,50 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row">
+    <div class="col-md-7 col-11 mx-auto">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title"><%= student.fullName %></h2>
+                <p class="page-subtitle">Student Profile</p>
+            </div>
+            <div class="d-flex gap-2">
+                <a href="/students/<%= student._id %>/edit" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-pen"></i> Edit
+                </a>
+                <form method="POST" action="/students/<%= student._id %>?_method=DELETE" class="d-inline">
+                    <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i> Delete</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3 mb-4">
+                    <div style="width:60px;height:60px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#4f46e5;font-size:1.4rem;">
+                        <%= student.fullName.charAt(0).toUpperCase() %>
+                    </div>
+                    <div>
+                        <h5 class="mb-0"><%= student.fullName %></h5>
+                        <span style="color:#6b7280;font-size:0.875rem;">@<%= student.username %></span>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-sm-6">
+                        <div style="font-size:0.78rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Email</div>
+                        <div style="font-weight:500;"><%= student.email %></div>
+                    </div>
+                    <div class="col-sm-6">
+                        <div style="font-size:0.78rem;color:#9ca3af;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;">Phone</div>
+                        <div style="font-weight:500;"><%= student.phone || "Not provided" %></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <a href="/attendance/<%= student._id %>/history" class="btn btn-outline-primary me-2">
+            <i class="fa-solid fa-clipboard-check"></i> View Attendance
+        </a>
+        <br><br>
+        <a href="/students" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to students</a>
+    </div>
+</div>

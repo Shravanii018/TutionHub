@@ -1,0 +1,35 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-11">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title">New Announcement</h2>
+                <p class="page-subtitle">Broadcast a message to all students</p>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <form action="/announcements" method="POST" class="needs-validation" novalidate>
+                <div class="mb-3">
+                    <label for="title" class="form-label">Title</label>
+                    <input name="announcement[title]" id="title" type="text" class="form-control" placeholder="e.g. Unit Test Next Week" required>
+                    <div class="invalid-feedback">Please enter a title</div>
+                </div>
+                <div class="mb-4">
+                    <label for="message" class="form-label">Message</label>
+                    <textarea name="announcement[message]" id="message" class="form-control" rows="5" placeholder="Write your announcement here..." required></textarea>
+                    <div class="invalid-feedback">Please enter a message</div>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-primary">
+                        <i class="fa-solid fa-bullhorn"></i> Post Announcement
+                    </button>
+                    <a href="/announcements" class="btn btn-outline-primary">Cancel</a>
+                </div>
+            </form>
+        </div>
+        <br>
+        <a href="/announcements" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to announcements</a>
+    </div>
+</div>

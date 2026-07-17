@@ -1,0 +1,41 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Flashcard Sets</h2>
+        <p class="page-subtitle">Quick revision cards generated from your PDFs</p>
+    </div>
+</div>
+
+<% if(allFlashcards.length === 0) { %>
+<div class="empty-state">
+    <i class="fa-solid fa-layer-group"></i>
+    <p>No flashcard sets yet. Upload a PDF and generate flashcards from it!</p>
+    <a href="/content" class="btn btn-primary">Go to Notes & PDFs</a>
+</div>
+<% } else { %>
+<div class="row row-cols-lg-3 row-cols-md-2 row-cols-1 g-4">
+    <% for(let fc of allFlashcards) { %>
+    <div class="col">
+        <div class="card h-100">
+            <div class="card-body">
+                <div style="width:44px;height:44px;background:#ede9fe;border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem;">
+                    <i class="fa-solid fa-layer-group" style="color:#4f46e5;"></i>
+                </div>
+                <h6 style="font-weight:700;"><%= fc.note ? fc.note.title : "Flashcard Set" %></h6>
+                <p style="color:#6b7280;font-size:0.85rem;"><%= fc.cards.length %> cards</p>
+                <p style="color:#9ca3af;font-size:0.78rem;">Generated: <%= fc.generatedAt.toDateString() %></p>
+            </div>
+            <div class="card-footer d-flex justify-content-between">
+                <a href="/flashcards/<%= fc._id %>" class="btn btn-primary btn-sm">
+                    <i class="fa-solid fa-play"></i> Study
+                </a>
+                <form method="POST" action="/flashcards/<%= fc._id %>?_method=DELETE">
+                    <button class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <% } %>
+</div>
+<% } %>

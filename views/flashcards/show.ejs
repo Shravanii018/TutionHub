@@ -1,0 +1,62 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="row justify-content-center">
+    <div class="col-md-7 col-11">
+        <div class="page-header">
+            <div>
+                <h2 class="page-title"><%= flashcard.note ? flashcard.note.title : "Flashcard Set" %></h2>
+                <p class="page-subtitle"><%= flashcard.cards.length %> cards — click a card to reveal the answer</p>
+            </div>
+        </div>
+
+        <!-- counter -->
+        <div class="flashcard-nav mb-4">
+            <button id="prevBtn" onclick="changeCard(-1)" disabled>&#8592;</button>
+            <span class="flashcard-counter" id="counter">1 / <%= flashcard.cards.length %></span>
+            <button id="nextBtn" onclick="changeCard(1)">&#8594;</button>
+        </div>
+
+        <!-- flashcard -->
+        <div class="flashcard-scene" id="flashcardScene" onclick="flipCard()">
+            <div class="flashcard-inner" id="flashcardInner">
+                <div class="flashcard-front">
+                    <span class="label">Question</span>
+                    <span class="card-text" id="questionText"></span>
+                    <span class="flip-hint">Click to reveal answer</span>
+                </div>
+                <div class="flashcard-back">
+                    <span class="label">Answer</span>
+                    <span class="card-text" id="answerText"></span>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            const cards = <%- JSON.stringify(flashcard.cards) %>;
+            let current = 0;
+
+            function loadCard(index) {
+                document.getElementById("questionText").textContent = cards[index].question;
+                document.getElementById("answerText").textContent = cards[index].answer;
+                document.getElementById("counter").textContent = (index + 1) + " / " + cards.length;
+                document.getElementById("flashcardScene").classList.remove("flipped");
+                document.getElementById("prevBtn").disabled = index === 0;
+                document.getElementById("nextBtn").disabled = index === cards.length - 1;
+            }
+
+            function flipCard() {
+                document.getElementById("flashcardScene").classList.toggle("flipped");
+            }
+
+            function changeCard(direction) {
+                current += direction;
+                loadCard(current);
+            }
+
+            loadCard(0);
+        </script>
+
+        <br>
+        <a href="/flashcards" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to flashcards</a>
+    </div>
+</div>

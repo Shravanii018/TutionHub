@@ -1,0 +1,73 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title">Mark Attendance</h2>
+        <p class="page-subtitle"><%= today.toDateString() %></p>
+    </div>
+</div>
+
+<% if(allStudents.length === 0) { %>
+<div class="empty-state">
+    <i class="fa-solid fa-clipboard-check"></i>
+    <p>No students found. Add students first.</p>
+    <a href="/students/new" class="btn btn-primary">Add Student</a>
+</div>
+<% } else { %>
+<div class="table-card">
+    <form action="/attendance" method="POST">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Student Name</th>
+                    <th>Present</th>
+                    <th>Absent</th>
+                    <th>History</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% for(let i = 0; i < allStudents.length; i++) { %>
+                <tr>
+                    <td><%= i + 1 %></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div style="width:32px;height:32px;background:#ede9fe;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;color:#4f46e5;font-size:0.8rem;flex-shrink:0;">
+                                <%= allStudents[i].fullName.charAt(0).toUpperCase() %>
+                            </div>
+                            <span style="font-weight:600;"><%= allStudents[i].fullName %></span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                name="attendance[<%= allStudents[i]._id %>]"
+                                value="present"
+                                <%= attendanceMap[allStudents[i]._id.toString()] === "present" ? "checked" : "" %>>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio"
+                                name="attendance[<%= allStudents[i]._id %>]"
+                                value="absent"
+                                <%= attendanceMap[allStudents[i]._id.toString()] === "absent" ? "checked" : "" %>>
+                        </div>
+                    </td>
+                    <td>
+                        <a href="/attendance/<%= allStudents[i]._id %>/history" class="btn btn-outline-primary btn-sm">
+                            <i class="fa-solid fa-clock-rotate-left"></i> History
+                        </a>
+                    </td>
+                </tr>
+                <% } %>
+            </tbody>
+        </table>
+        <div class="p-3">
+            <button class="btn btn-primary">
+                <i class="fa-solid fa-clipboard-check"></i> Save Attendance
+            </button>
+        </div>
+    </form>
+</div>
+<% } %>

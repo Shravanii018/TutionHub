@@ -1,0 +1,80 @@
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <a class="navbar-brand" href="/announcements">
+      <div class="brand-icon">
+        <i class="fa-solid fa-graduation-cap"></i>
+      </div>
+      TuitionHub
+    </a>
+
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarMain">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarMain">
+      <% if(currUser) { %>
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="/announcements">
+            <i class="fa-solid fa-bullhorn"></i> Announcements
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/content">
+            <i class="fa-solid fa-book-open"></i> Notes & PDFs
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/flashcards">
+            <i class="fa-solid fa-layer-group"></i> Flashcards
+          </a>
+        </li>
+        <% if(currUser.role === "teacher") { %>
+        <li class="nav-item">
+          <a class="nav-link" href="/students">
+            <i class="fa-solid fa-users"></i> Students
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/attendance">
+            <i class="fa-solid fa-clipboard-check"></i> Attendance
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="/fees">
+            <i class="fa-solid fa-indian-rupee-sign"></i> Fees
+          </a>
+        </li>
+        <% } else { %>
+        <li class="nav-item">
+          <a class="nav-link" href="/fees">
+            <i class="fa-solid fa-indian-rupee-sign"></i> My Fees
+          </a>
+        </li>
+        <% } %>
+      </ul>
+      <ul class="navbar-nav ms-auto align-items-center gap-1">
+        <li class="nav-item">
+          <span class="nav-user">
+            <i class="fa-regular fa-circle-user"></i> <%= currUser.fullName %>
+          </span>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn-nav-logout" href="/logout">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </a>
+        </li>
+      </ul>
+      <% } else { %>
+      <ul class="navbar-nav ms-auto gap-2">
+        <li class="nav-item">
+          <a class="nav-link" href="/signup">Sign Up</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link btn-nav-logout" href="/login">Login</a>
+        </li>
+      </ul>
+      <% } %>
+    </div>
+  </div>
+</nav>

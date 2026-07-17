@@ -1,0 +1,81 @@
+<% layout("/layouts/boilerplate") %>
+
+<div class="page-header">
+    <div>
+        <h2 class="page-title"><%= student.fullName %>'s Attendance</h2>
+        <p class="page-subtitle">Full attendance history</p>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card stat-card green">
+            <div class="stat-icon"><i class="fa-solid fa-circle-check"></i></div>
+            <div>
+                <div class="stat-value"><%= records.filter(r => r.status === "present").length %></div>
+                <div class="stat-label">Days Present</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card orange">
+            <div class="stat-icon"><i class="fa-solid fa-circle-xmark"></i></div>
+            <div>
+                <div class="stat-value"><%= records.filter(r => r.status === "absent").length %></div>
+                <div class="stat-label">Days Absent</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card stat-card purple">
+            <div class="stat-icon"><i class="fa-solid fa-percent"></i></div>
+            <div>
+                <div class="stat-value"><%= percentage %>%</div>
+                <div class="stat-label">Attendance Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between mb-2">
+            <span style="font-weight:600;">Overall Attendance</span>
+            <span style="font-weight:700;color:#4f46e5;"><%= percentage %>%</span>
+        </div>
+        <div class="progress">
+            <div class="progress-bar" style="width:<%= percentage %>%"></div>
+        </div>
+    </div>
+</div>
+
+<div class="table-card">
+    <table class="table">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Date</th>
+                <th>Day</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% for(let i = 0; i < records.length; i++) { %>
+            <tr>
+                <td><%= i + 1 %></td>
+                <td><%= records[i].date.toLocaleDateString("en-IN") %></td>
+                <td><%= records[i].date.toLocaleDateString("en-IN", { weekday: "long" }) %></td>
+                <td>
+                    <% if(records[i].status === "present") { %>
+                        <span class="badge-present"><i class="fa-solid fa-check me-1"></i>Present</span>
+                    <% } else { %>
+                        <span class="badge-absent"><i class="fa-solid fa-xmark me-1"></i>Absent</span>
+                    <% } %>
+                </td>
+            </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+<br>
+<a href="/attendance" class="back-link"><i class="fa-solid fa-arrow-left"></i> Back to attendance</a>
