@@ -22,15 +22,14 @@ module.exports.renderNewForm = (req, res) => {
     res.render("content/new.ejs");
 };
 
-// upload new note/PDF (multer puts file info in req.file)
+// upload new note/PDF — multer-storage-cloudinary puts file info in req.file
 module.exports.createContent = async (req, res) => {
     const newNote = new Note(req.body.note);
     newNote.uploadedBy = req.user._id;
-    // if a file was uploaded via multer
     if (req.file) {
         newNote.file = {
             filename: req.file.originalname,
-            url: `/uploads/${req.file.filename}`,
+            url: req.file.path,   // cloudinary gives the full URL in req.file.path
         };
     }
     await newNote.save();

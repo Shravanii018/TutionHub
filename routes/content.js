@@ -4,16 +4,23 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { isLoggedIn, isTeacher, validateNote } = require("../middleware.js");
 const contentController = require("../controllers/content.js");
 const multer = require("multer");
+const cloudinary = require("cloudinary").v2;
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
 
-// multer storage config — files saved to public/uploads/
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, "public/uploads/");
-    },
-    filename: function (req, file, cb) {
-        // keep original name with a timestamp prefix to avoid duplicates
-        const uniqueName = Date.now() + "-" + file.originalname;
-        cb(null, uniqueName);
+// configure cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// store uploads directly on cloudinary
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: {
+        folder: "tuitionhub",
+        allowed_formats: ["pdf", "doc", "docx"],
+        resource_type: "raw",
     },
 });
 
@@ -23,7 +30,6 @@ router.route("/")
     .get(isLoggedIn, wrapAsync(contentController.index))
     .post(isLoggedIn, isTeacher, upload.single("note[file]"), validateNote, wrapAsync(contentController.createContent));
 
-// New Route
 router.get("/new", isLoggedIn, isTeacher, contentController.renderNewForm);
 
 router.route("/:id")
