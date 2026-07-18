@@ -4,23 +4,29 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { isLoggedIn, isTeacher, validateNote } = require("../middleware.js");
 const contentController = require("../controllers/content.js");
 const multer = require("multer");
-const cloudinary = require("cloudinary").v2;
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 
-// configure cloudinary
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
+    api_key:    process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// store uploads directly on cloudinary
+console.log("Cloudinary config:", {
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY ? "set" : "NOT SET",
+    api_secret: process.env.CLOUDINARY_API_SECRET ? "set" : "NOT SET",
+});
+
 const storage = new CloudinaryStorage({
     cloudinary: cloudinary,
-    params: {
-        folder: "tuitionhub",
-        allowed_formats: ["pdf", "doc", "docx"],
-        resource_type: "raw",
+    params: async (req, file) => {
+        return {
+            folder: "tuitionhub",
+            resource_type: "raw",
+            public_id: Date.now() + "-" + file.originalname,
+        };
     },
 });
 
