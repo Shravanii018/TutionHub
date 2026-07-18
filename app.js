@@ -74,18 +74,18 @@ app.use((req, res, next) => {
     next();
 });
 
-app.get("/setup-teacher", async (req, res) => {
-    const User = require("./models/user.js");
-    const teacher = new User({
-        username: "deepali_maam",
-        fullName: "Mrs. Deepali",
-        email: "deepali.jagtap2012@gmail.com",
-        phone: "9970300610",
-        role: "teacher",
-    });
-    await User.register(teacher, "Avani@10");
-    res.send("Teacher account created successfully!");
-});
+// app.get("/setup-teacher", async (req, res) => {
+//     const User = require("./models/user.js");
+//     const teacher = new User({
+//         username: "deepali_maam",
+//         fullName: "Mrs. Deepali",
+//         email: "deepali.jagtap2012@gmail.com",
+//         phone: "9970300610",
+//         role: "teacher",
+//     });
+//     await User.register(teacher, "Avani@10");
+//     res.send("Teacher account created successfully!");
+// });
 
 
 app.get("/", (req, res) => {
@@ -99,6 +99,21 @@ app.use("/fees", feeRouter);                       // track fee payments
 app.use("/content", contentRouter);                // notes & PDF uploads
 app.use("/announcements", announcementRouter);     // teacher announcements
 app.use("/flashcards", flashcardRouter);           // AI flashcard generation
+
+app.get("/test-cloudinary", async (req, res) => {
+    try {
+        const cloudinary = require("cloudinary").v2;
+        cloudinary.config({
+            cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+            api_key: process.env.CLOUDINARY_API_KEY,
+            api_secret: process.env.CLOUDINARY_API_SECRET,
+        });
+        const result = await cloudinary.api.ping();
+        res.send("Cloudinary connected! " + JSON.stringify(result));
+    } catch(e) {
+        res.send("Cloudinary ERROR: " + e.message);
+    }
+});
 
 // 404 handler
 app.use((req, res, next) => {
