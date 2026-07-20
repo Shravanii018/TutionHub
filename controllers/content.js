@@ -34,12 +34,11 @@ module.exports.renderNewForm = (req, res) => {
 const uploadToCloudinary = (buffer, mimetype) => {
     return new Promise((resolve, reject) => {
         // determine resource type based on mimetype
-        const resourceType = mimetype === "application/pdf" ? "image" : "auto";
+        // const resourceType = mimetype === "application/pdf" ? "image" : "auto";
         const uploadStream = cloudinary.uploader.upload_stream(
             {
-                folder: "tuitionhub",
-                resource_type: resourceType,
-                format: "pdf",
+                upload_preset: "tuitionhub_preset",
+                resource_type: "auto",
             },
             (error, result) => {
                 if (error) {
