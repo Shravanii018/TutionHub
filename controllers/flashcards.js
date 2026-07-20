@@ -1,7 +1,5 @@
 const Flashcard = require("../models/flashcard.js");
 const Note = require("../models/note.js");
-const fs = require("fs");
-const path = require("path");
 const pdfParse = require("pdf-parse");
 
 // show all flashcard sets
@@ -21,7 +19,7 @@ module.exports.show = async (req, res) => {
     res.render("flashcards/show.ejs", { flashcard });
 };
 
-// generate flashcards from a PDF using Groq API (free, works in India)
+// generate flashcards from a PDF using Groq API
 module.exports.generate = async (req, res) => {
     let { noteId } = req.params;
     const note = await Note.findById(noteId);
@@ -31,14 +29,26 @@ module.exports.generate = async (req, res) => {
         return res.redirect("/content");
     }
 
-    // read the PDF file and extract text
-    const filePath = path.join(__dirname, "..", "public", note.file.url);
-    const fileBuffer = fs.readFileSync(filePath);
+    if (!note.file || !note.file.url) {
+        req.flash("error", "No file attached to this note!");
+        return res.redirect("/content");
+    }
+
+    // download PDF from Cloudinary URL instead of reading from disk
+    const response = await fetch(note.file.url);
+    if (!response.ok) {
+        req.flash("error", "Could not download the PDF file!");
+        return res.redirect("/content");
+    }
+    const arrayBuffer = await response.arrayBuffer();
+    const fileBuffer = Buffer.from(arrayBuffer);
+
+    // extract text from PDF buffer
     const pdfData = await pdfParse(fileBuffer);
     const extractedText = pdfData.text.slice(0, 3000);
 
-    // call the Groq API (free tier — no credit card needed, works in India)
-    const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    // call the Groq API
+    const groqResponse = await fetch("https://api.groq.com/openai/v1/chat/completions", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -65,25 +75,17 @@ ${extractedText}`
         }),
     });
 
-    const data = await response.json();
+    const data = await groqResponse.json();
 
-    // log response for debugging
-    console.log("Groq response:", JSON.stringify(data, null, 2));
-
-    // check if Groq returned an error
     if (data.error) {
         req.flash("error", `Groq API error: ${data.error.message}`);
         return res.redirect("/content");
     }
 
-    // Groq follows OpenAI format — response is in choices[0].message.content
     const rawText = data.choices[0].message.content;
-
-    // strip any accidental markdown backticks, then parse
     const cleanText = rawText.replace(/```json|```/g, "").trim();
     const cards = JSON.parse(cleanText);
 
-    // save the flashcard set to DB
     const flashcard = new Flashcard({
         note: note._id,
         cards,
