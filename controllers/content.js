@@ -1,11 +1,6 @@
 const Note = require("../models/note.js");
 const cloudinary = require("cloudinary").v2;
-
-// cloudinary.config({
-//     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-//     api_key: process.env.CLOUDINARY_API_KEY,
-//     api_secret: process.env.CLOUDINARY_API_SECRET,
-// });
+const streamifier = require("streamifier");
 
 // show all uploaded notes and PDFs
 module.exports.index = async (req, res) => {
@@ -29,28 +24,30 @@ module.exports.renderNewForm = (req, res) => {
     res.render("content/new.ejs");
 };
 
-// upload new note/PDF — upload buffer to cloudinary directly
+// upload to cloudinary using streamifier
+const uploadToCloudinary = (buffer, filename) => {
+    return new Promise((resolve, reject) => {
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: "tuitionhub",
+                resource_type: "raw",
+                public_id: Date.now() + "-" + filename,
+            },
+            (error, result) => {
+                if (error) reject(error);
+                else resolve(result);
+            }
+        );
+        streamifier.createReadStream(buffer).pipe(uploadStream);
+    });
+};
+
 module.exports.createContent = async (req, res) => {
     const newNote = new Note(req.body.note);
     newNote.uploadedBy = req.user._id;
 
     if (req.file) {
-        // upload buffer to cloudinary using upload_stream
-        const result = await new Promise((resolve, reject) => {
-            const stream = cloudinary.uploader.upload_stream(
-                {
-                    folder: "tuitionhub",
-                    resource_type: "raw",
-                    public_id: Date.now() + "-" + req.file.originalname,
-                },
-                (error, result) => {
-                    if (error) reject(error);
-                    else resolve(result);
-                }
-            );
-            stream.end(req.file.buffer);
-        });
-
+        const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
         newNote.file = {
             filename: req.file.originalname,
             url: result.secure_url,
