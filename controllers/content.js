@@ -1,5 +1,16 @@
 const Note = require("../models/note.js");
 
+const Note = require("../models/note.js");
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
+// configure cloudinary explicitly
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 // show all uploaded notes and PDFs
 module.exports.index = async (req, res) => {
     const allNotes = await Note.find({}).populate("uploadedBy");
