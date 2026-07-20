@@ -1,13 +1,4 @@
 const Note = require("../models/note.js");
-const cloudinary = require("cloudinary").v2;
-const streamifier = require("streamifier");
-
-// configure cloudinary explicitly
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
 
 // show all uploaded notes and PDFs
 module.exports.index = async (req, res) => {
@@ -38,25 +29,9 @@ module.exports.createContent = async (req, res) => {
     const newNote = new Note(req.body.note);
     newNote.uploadedBy = req.user._id;
     if (req.file) {
-        const streamUpload = (req) => {
-            return new Promise((resolve, reject) => {
-                const stream = cloudinary.uploader.upload_stream(
-                    { resource_type: "raw", folder: "tuitionhub" },
-                    (error, result) => {
-                        if (result) {
-                            resolve(result);
-                        } else {
-                            reject(error);
-                        }
-                    }
-                );
-                streamifier.createReadStream(req.file.buffer).pipe(stream);
-            });
-        };
-        const result = await streamUpload(req);
         newNote.file = {
             filename: req.file.originalname,
-            url: result.secure_url,
+            url: req.file.path, // multer-storage-cloudinary provides the URL here
         };
     }
     await newNote.save();

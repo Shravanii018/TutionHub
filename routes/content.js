@@ -4,9 +4,29 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const { isLoggedIn, isTeacher, validateNote } = require("../middleware.js");
 const contentController = require("../controllers/content.js");
 const multer = require("multer");
+const { CloudinaryStorage } = require("multer-storage-cloudinary");
+const cloudinary = require("cloudinary").v2;
 
-// use memory storage — file goes to buffer, we upload to cloudinary manually
-const upload = multer({ storage: multer.memoryStorage() });
+// configure cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
+// store uploads directly on cloudinary as raw files (PDFs)
+const storage = new CloudinaryStorage({
+    cloudinary: cloudinary,
+    params: async (req, file) => {
+        return {
+            folder: "tuitionhub",
+            resource_type: "raw",
+            public_id: Date.now() + "-" + file.originalname.replace(/\.[^/.]+$/, ""), // remove extension for public_id
+        };
+    },
+});
+
+const upload = multer({ storage });
 
 router.route("/")
     .get(isLoggedIn, wrapAsync(contentController.index))
