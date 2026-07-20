@@ -30,7 +30,7 @@ const uploadToCloudinary = (buffer, filename) => {
         const uploadStream = cloudinary.uploader.upload_stream(
             {
                 folder: "tuitionhub",
-                resource_type: "raw",
+                resource_type: "auto",
                 public_id: Date.now() + "-" + filename,
             },
             (error, result) => {
