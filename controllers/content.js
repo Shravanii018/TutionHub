@@ -1,13 +1,17 @@
 const Note = require("../models/note.js");
-const FormData = require("form-data");
+const cloudinary = require("cloudinary").v2;
 
-// show all uploaded notes and PDFs
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
+
 module.exports.index = async (req, res) => {
     const allNotes = await Note.find({}).populate("uploadedBy");
     res.render("content/index.ejs", { allNotes });
 };
 
-// show single note/pdf
 module.exports.show = async (req, res) => {
     let { id } = req.params;
     const note = await Note.findById(id).populate("uploadedBy");
@@ -18,38 +22,8 @@ module.exports.show = async (req, res) => {
     res.render("content/show.ejs", { note });
 };
 
-// render upload form (teacher only)
 module.exports.renderNewForm = (req, res) => {
     res.render("content/new.ejs");
-};
-
-// upload to cloudinary using unsigned upload (no API secret needed)
-const uploadToCloudinary = async (buffer, filename) => {
-    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
-    const uploadPreset = "tuitionhub_preset";
-
-    const formData = new FormData();
-    formData.append("file", buffer, { filename, contentType: "application/pdf" });
-    formData.append("upload_preset", uploadPreset);
-    formData.append("folder", "tuitionhub");
-
-    const response = await fetch(
-        `https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`,
-        {
-            method: "POST",
-            body: formData,
-            headers: formData.getHeaders(),
-        }
-    );
-
-    const data = await response.json();
-    console.log("Cloudinary response:", JSON.stringify(data));
-
-    if (data.error) {
-        throw new Error(data.error.message);
-    }
-
-    return data;
 };
 
 module.exports.createContent = async (req, res) => {
@@ -58,13 +32,24 @@ module.exports.createContent = async (req, res) => {
 
     if (req.file) {
         try {
-            const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+            // convert buffer to base64 data URI and upload
+            const b64 = Buffer.from(req.file.buffer).toString("base64");
+            const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+
+            const result = await cloudinary.uploader.upload(dataURI, {
+                folder: "tuitionhub",
+                resource_type: "auto",
+                use_filename: true,
+                unique_filename: true,
+            });
+
+            console.log("Cloudinary success:", result.secure_url);
             newNote.file = {
                 filename: req.file.originalname,
                 url: result.secure_url,
             };
         } catch (err) {
-            console.log("Upload failed:", err.message);
+            console.log("Cloudinary error:", err.message);
             req.flash("error", "File upload failed: " + err.message);
             return res.redirect("/content/new");
         }
@@ -75,7 +60,6 @@ module.exports.createContent = async (req, res) => {
     res.redirect("/content");
 };
 
-// delete note/PDF (teacher only)
 module.exports.destroyContent = async (req, res) => {
     let { id } = req.params;
     await Note.findByIdAndDelete(id);
