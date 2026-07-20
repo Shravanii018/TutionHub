@@ -1,6 +1,4 @@
 const Note = require("../models/note.js");
-
-const Note = require("../models/note.js");
 const cloudinary = require("cloudinary").v2;
 const streamifier = require("streamifier");
 
@@ -40,9 +38,24 @@ module.exports.createContent = async (req, res) => {
     const newNote = new Note(req.body.note);
     newNote.uploadedBy = req.user._id;
     if (req.file) {
+        const streamUpload = (req) => {
+            return new Promise((resolve, reject) => {
+                const stream = cloudinary.uploader.upload_stream(
+                    (error, result) => {
+                        if (result) {
+                            resolve(result);
+                        } else {
+                            reject(error);
+                        }
+                    }
+                );
+                streamifier.createReadStream(req.file.buffer).pipe(stream);
+            });
+        };
+        const result = await streamUpload(req);
         newNote.file = {
             filename: req.file.originalname,
-            url: req.file.path,
+            url: result.secure_url,
         };
     }
     await newNote.save();
