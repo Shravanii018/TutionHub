@@ -41,6 +41,7 @@ module.exports.createContent = async (req, res) => {
         const streamUpload = (req) => {
             return new Promise((resolve, reject) => {
                 const stream = cloudinary.uploader.upload_stream(
+                    { resource_type: "auto" },
                     (error, result) => {
                         if (result) {
                             resolve(result);
