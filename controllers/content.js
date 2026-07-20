@@ -1,12 +1,5 @@
 const Note = require("../models/note.js");
-const cloudinary = require("cloudinary").v2;
-
-// configure cloudinary
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const FormData = require("form-data");
 
 // show all uploaded notes and PDFs
 module.exports.index = async (req, res) => {
@@ -30,33 +23,33 @@ module.exports.renderNewForm = (req, res) => {
     res.render("content/new.ejs");
 };
 
-// upload buffer to cloudinary
-const uploadToCloudinary = (buffer, mimetype) => {
-    return new Promise((resolve, reject) => {
-        // determine resource type based on mimetype
-        // const resourceType = mimetype === "application/pdf" ? "image" : "auto";
-        const uploadStream = cloudinary.uploader.upload_stream(
-            {
-                upload_preset: "tuitionhub_preset",
-                resource_type: "auto",
-            },
-            (error, result) => {
-                if (error) {
-                    console.log("Cloudinary error:", error);
-                    reject(error);
-                } else {
-                    console.log("Cloudinary success:", result.secure_url);
-                    resolve(result);
-                }
-            }
-        );
-        // pipe buffer into stream
-        const { Readable } = require("stream");
-        const readable = new Readable();
-        readable.push(buffer);
-        readable.push(null);
-        readable.pipe(uploadStream);
-    });
+// upload to cloudinary using unsigned upload (no API secret needed)
+const uploadToCloudinary = async (buffer, filename) => {
+    const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+    const uploadPreset = "tuitionhub_preset";
+
+    const formData = new FormData();
+    formData.append("file", buffer, { filename, contentType: "application/pdf" });
+    formData.append("upload_preset", uploadPreset);
+    formData.append("folder", "tuitionhub");
+
+    const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/raw/upload`,
+        {
+            method: "POST",
+            body: formData,
+            headers: formData.getHeaders(),
+        }
+    );
+
+    const data = await response.json();
+    console.log("Cloudinary response:", JSON.stringify(data));
+
+    if (data.error) {
+        throw new Error(data.error.message);
+    }
+
+    return data;
 };
 
 module.exports.createContent = async (req, res) => {
@@ -65,7 +58,7 @@ module.exports.createContent = async (req, res) => {
 
     if (req.file) {
         try {
-            const result = await uploadToCloudinary(req.file.buffer, req.file.mimetype);
+            const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
             newNote.file = {
                 filename: req.file.originalname,
                 url: result.secure_url,
