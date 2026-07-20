@@ -1,6 +1,4 @@
 const Note = require("../models/note.js");
-const cloudinary = require("cloudinary").v2;
-const streamifier = require("streamifier");
 
 // show all uploaded notes and PDFs
 module.exports.index = async (req, res) => {
@@ -24,36 +22,18 @@ module.exports.renderNewForm = (req, res) => {
     res.render("content/new.ejs");
 };
 
-// upload to cloudinary using streamifier
-const uploadToCloudinary = (buffer, filename) => {
-    return new Promise((resolve, reject) => {
-        const uploadStream = cloudinary.uploader.upload_stream(
-            {
-                folder: "tuitionhub",
-                resource_type: "auto",
-                public_id: Date.now() + "-" + filename,
-            },
-            (error, result) => {
-                if (error) reject(error);
-                else resolve(result);
-            }
-        );
-        streamifier.createReadStream(buffer).pipe(uploadStream);
-    });
-};
-
+// upload new note/PDF
 module.exports.createContent = async (req, res) => {
+    console.log("req.file:", req.file);
+    console.log("req.body:", req.body);
     const newNote = new Note(req.body.note);
     newNote.uploadedBy = req.user._id;
-
     if (req.file) {
-        const result = await uploadToCloudinary(req.file.buffer, req.file.originalname);
         newNote.file = {
             filename: req.file.originalname,
-            url: result.secure_url,
+            url: req.file.path,
         };
     }
-
     await newNote.save();
     req.flash("success", "Content uploaded successfully!");
     res.redirect("/content");
