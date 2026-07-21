@@ -1,11 +1,10 @@
 const Note = require("../models/note.js");
-const cloudinary = require("cloudinary").v2;
+const { createClient } = require("@supabase/supabase-js");
 
-cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+const supabase = createClient(
+    process.env.SUPABASE_URL,
+    process.env.SUPABASE_KEY
+);
 
 module.exports.index = async (req, res) => {
     const allNotes = await Note.find({}).populate("uploadedBy");
@@ -32,24 +31,34 @@ module.exports.createContent = async (req, res) => {
 
     if (req.file) {
         try {
-            // convert buffer to base64 data URI and upload
-            const b64 = Buffer.from(req.file.buffer).toString("base64");
-            const dataURI = `data:${req.file.mimetype};base64,${b64}`;
+            const filename = Date.now() + "-" + req.file.originalname;
 
-            const result = await cloudinary.uploader.upload(dataURI, {
-                folder: "tuitionhub",
-                resource_type: "auto",
-                use_filename: true,
-                unique_filename: true,
-            });
+            // upload to supabase storage
+            const { data, error } = await supabase.storage
+                .from("tuitionhub-files")
+                .upload(filename, req.file.buffer, {
+                    contentType: req.file.mimetype,
+                    upsert: false,
+                });
 
-            console.log("Cloudinary success:", result.secure_url);
+            if (error) {
+                console.log("Supabase upload error:", error.message);
+                req.flash("error", "File upload failed: " + error.message);
+                return res.redirect("/content/new");
+            }
+
+            // get public URL
+            const { data: urlData } = supabase.storage
+                .from("tuitionhub-files")
+                .getPublicUrl(filename);
+
+            console.log("Supabase upload success:", urlData.publicUrl);
             newNote.file = {
                 filename: req.file.originalname,
-                url: result.secure_url,
+                url: urlData.publicUrl,
             };
         } catch (err) {
-            console.log("Cloudinary error:", err.message);
+            console.log("Upload error:", err.message);
             req.flash("error", "File upload failed: " + err.message);
             return res.redirect("/content/new");
         }
